@@ -1,11 +1,21 @@
 #!/bin/bash
 
+#1.mount disk
+echo "-----Starting mount disks-----"
+mdadm --create --verbose /dev/md0 --level=0 --raid-devices=4 /dev/nvme0n1 /dev/nvme1n1 /dev/nvme2n1 /dev/nvme3n1
+mkfs.ext4 /dev/md0
+mkdir /mnt
+mount /dev/md0 /mnt
+blkid=$(blkid | grep /dev/md0)
+uuid=${blkid:18:36}
+echo "/dev/disk/by-uuid/$uuid /mnt ext4 defaults 0 0" >> /etc/fstab
+echo "-----Disks mounted-----"
+
+#2.Configure env
 envirConfig=/root/.bashrc
 etcprofile=/etc/profile
 etchosts=/etc/hosts
-
-#1.Configure env
-echo "Starting env configuration..."
+echo "-----Starting env configuration-----"
 if [ ! -d $fil_proofs_parameter_cache ]
 then
 	mkdir -p /mnt/filecoin-proof-parameters
@@ -86,11 +96,10 @@ fi
 
 source /root/.bashrc
 source /etc/profile
-echo "Env configuration finished!!!"
+echo "-----Env configuration finished!!!-----"
 
-#2. install dependancy
-
-echo "Starting dependancy installation"
+#3. install dependancy
+echo "-----Starting dependancy installation-----"
 add-apt-repository ppa:longsleep/golang-backports
 apt update
 apt install -y gcc git bzr jq pkg-config mesa-opencl-icd ocl-icd-opencl-dev ubuntu-drivers-common nvidia-driver-455 lrzsz ntpdate
@@ -100,11 +109,15 @@ wget https://gomirrors.org/dl/go/go1.15.6.linux-amd64.tar.gz
 tar -C /usr/local -xzf go1.15.6.linux-amd64.tar.gz
 echo "export PATH=$PATH:/usr/local/go/bin" >> $envirConfig
 source /root/.bashrc
+echo "-----All finished!!-----"
 
-#install fininshed, check installation
+#4.install fininshed, check installation
 
-nvidiadrivers=$(echo "nvidia-smi")
+nvidiadrivers=$(nvidia-smi)
 echo "$nvidiadrivers"
 
-goversion=$(echo "go version")
+goversion=$(go version)
 echo "$goversion"
+
+disk=$(df -h)
+echo "$disk"
