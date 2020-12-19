@@ -1,7 +1,7 @@
 #!/bin/bash
 
 #1.mount disk
-echo "-----Starting mount disks-----"
+echo "-----------------Starting mount disks-----------------"
 mdadm --create --verbose /dev/md0 --level=0 --raid-devices=4 /dev/nvme0n1 /dev/nvme1n1 /dev/nvme2n1 /dev/nvme3n1
 mkfs.ext4 /dev/md0
 mkdir /mnt
@@ -9,13 +9,13 @@ mount /dev/md0 /mnt
 blkid=$(blkid | grep /dev/md0)
 uuid=${blkid:18:36}
 echo "/dev/disk/by-uuid/$uuid /mnt ext4 defaults 0 0" >> /etc/fstab
-echo "-----Disks mounted-----"
+echo "-----------------Disks mounted-----------------"
 
 #2.Configure env
 envirConfig=/root/.bashrc
 etcprofile=/etc/profile
 etchosts=/etc/hosts
-echo "-----Starting env configuration-----"
+echo "-----------------Starting env configuration-----------------"
 mv /etc/apt/sources.list /etc/apt/sources.list-original
 cp /home/envshell/sources.list /etc/apt/
 echo "91.189.88.142 archive.ubuntu.com" >> $etchosts
@@ -99,10 +99,10 @@ fi
 
 source /root/.bashrc
 source /etc/profile
-echo "-----Env configuration finished!!!-----"
+echo "-----------------Env configuration finished!!!-----------------"
 
 #3. install dependancy
-echo "-----Starting dependancy installation-----"
+echo "-----------------Starting dependancy installation-----------------"
 apt update
 apt install -y gcc git bzr jq pkg-config mesa-opencl-icd ocl-icd-opencl-dev ubuntu-drivers-common lrzsz
 
@@ -114,7 +114,7 @@ then
 	echo "export PATH=$PATH:/usr/local/go/bin" >> $envirConfig
 	source /root/.bashrc
 else
-	echo "go 1.15 already installed!!!"
+	echo "-----------------go 1.15 already installed!!!-----------------"
 fi
 
 mv /etc/apt/sources.list /etc/apt/sources.list-aliyun
@@ -122,7 +122,7 @@ mv /etc/apt/sources.list-original /etc/apt/sources.list
 apt install -y nvidia-driver-455 ntpdate
 ln -sf /usr/share/zoneinfo/Asia/Shanghai /etc/localtime
 ntpdate ntp.aliyun.com
-echo "-----All finished!!-----"
+echo "-----------------All finished!!-----------------"
 
 #4.install fininshed, check installation
 
