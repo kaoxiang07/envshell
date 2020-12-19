@@ -114,7 +114,7 @@ apt update
 apt install -y gcc git bzr jq pkg-config mesa-opencl-icd ocl-icd-opencl-dev ubuntu-drivers-common lrzsz
 
 checkgo=$(go version)
-if [ -z "$(cat $checkgo | grep go1.15)" ]
+if [ $checkgo != "go version go1.15.6 linux/amd64" ]
 then
 	wget https://gomirrors.org/dl/go/go1.15.6.linux-amd64.tar.gz
 	echo "-----------------now downloading golang-----------------"
