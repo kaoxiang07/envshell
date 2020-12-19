@@ -16,6 +16,8 @@ envirConfig=/root/.bashrc
 etcprofile=/etc/profile
 etchosts=/etc/hosts
 echo "-----Starting env configuration-----"
+mv /etc/apt/sources.list /etc/apt/sources.list-original
+cp /home/envshell/sources.list /etc/apt/
 echo "91.189.88.142 archive.ubuntu.com" >> $etchosts
 if [ ! -d $fil_proofs_parameter_cache ]
 then
@@ -102,13 +104,16 @@ echo "-----Env configuration finished!!!-----"
 #3. install dependancy
 echo "-----Starting dependancy installation-----"
 apt update
-apt install -y gcc git bzr jq pkg-config mesa-opencl-icd ocl-icd-opencl-dev ubuntu-drivers-common nvidia-driver-455 lrzsz ntpdate
+apt install -y gcc git bzr jq pkg-config mesa-opencl-icd ocl-icd-opencl-dev ubuntu-drivers-common lrzsz ntpdate
 ln -sf /usr/share/zoneinfo/Asia/Shanghai /etc/localtime
 ntpdate ntp.aliyun.com
 wget https://gomirrors.org/dl/go/go1.15.6.linux-amd64.tar.gz
 tar -C /usr/local -xzf go1.15.6.linux-amd64.tar.gz
 echo "export PATH=$PATH:/usr/local/go/bin" >> $envirConfig
 source /root/.bashrc
+mv /etc/apt/sources.list /etc/apt/sources.list-aliyun
+mv /etc/apt/sources.list-original /etc/apt/sources.list
+apt install -y nvidia-driver-455
 echo "-----All finished!!-----"
 
 #4.install fininshed, check installation
