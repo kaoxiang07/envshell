@@ -117,6 +117,7 @@ checkgo=$(go version)
 if [ -z "$(cat $checkgo | grep go1.15)" ]
 then
 	wget https://gomirrors.org/dl/go/go1.15.6.linux-amd64.tar.gz
+	echo "-----------------now downloading golang-----------------"
 	tar -C /usr/local -xzf go1.15.6.linux-amd64.tar.gz
 	echo "export PATH=$PATH:/usr/local/go/bin" >> $envirConfig
 	source /root/.bashrc
