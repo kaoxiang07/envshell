@@ -16,6 +16,7 @@ envirConfig=/root/.bashrc
 etcprofile=/etc/profile
 etchosts=/etc/hosts
 echo "-----Starting env configuration-----"
+echo "91.189.88.142 archive.ubuntu.com" >> $etchosts
 if [ ! -d $fil_proofs_parameter_cache ]
 then
 	mkdir -p /mnt/filecoin-proof-parameters
@@ -100,7 +101,6 @@ echo "-----Env configuration finished!!!-----"
 
 #3. install dependancy
 echo "-----Starting dependancy installation-----"
-add-apt-repository ppa:longsleep/golang-backports
 apt update
 apt install -y gcc git bzr jq pkg-config mesa-opencl-icd ocl-icd-opencl-dev ubuntu-drivers-common nvidia-driver-455 lrzsz ntpdate
 ln -sf /usr/share/zoneinfo/Asia/Shanghai /etc/localtime
