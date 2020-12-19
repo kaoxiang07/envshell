@@ -2,13 +2,20 @@
 
 #1.mount disk
 echo "-----------------Starting mount disks-----------------"
-mdadm --create --verbose /dev/md0 --level=0 --raid-devices=4 /dev/nvme0n1 /dev/nvme1n1 /dev/nvme2n1 /dev/nvme3n1
-mkfs.ext4 /dev/md0
-mkdir /mnt
-mount /dev/md0 /mnt
-blkid=$(blkid | grep /dev/md0)
-uuid=${blkid:18:36}
-echo "/dev/disk/by-uuid/$uuid /mnt ext4 defaults 0 0" >> /etc/fstab
+raidmd0=$(fdisk -l | grep /dev/md0)
+raidmd127=$(fdisk -l | grep /dev/md127)
+if [ -z $raidmd0 -a $raidmd127 ]
+then
+	mdadm --create --verbose /dev/md0 --level=0 --raid-devices=4 /dev/nvme0n1 /dev/nvme1n1 /dev/nvme2n1 /dev/nvme3n1
+	mkfs.ext4 /dev/md0
+	mkdir /mnt
+	mount /dev/md0 /mnt
+	blkid=$(blkid | grep /dev/md0)
+	uuid=${blkid:18:36}
+	echo "/dev/disk/by-uuid/$uuid /mnt ext4 defaults 0 0" >> /etc/fstab
+else
+	echo "-----------------Already mounted-----------------"
+fi
 echo "-----------------Disks mounted-----------------"
 
 #2.Configure env
@@ -71,22 +78,22 @@ then
 	echo "export GO111MODULE=on" >> $envirConfig
 fi
 
-if [ -z $(cat $envirConfig | grep GOPROXY)]
+if [ -z $(cat $envirConfig | grep GOPROXY) ]
 then
 	echo "export GOPROXY=https://goproxy.cn" >> $envirConfig
 fi
 
-if [ -z $(cat $envirConfig | grep FIL_PROOFS_SDR_PARENTS_CACHE_SIZE)]
+if [ -z $(cat $envirConfig | grep FIL_PROOFS_SDR_PARENTS_CACHE_SIZE) ]
 then
 	echo "export FIL_PROOFS_SDR_PARENTS_CACHE_SIZE=1073741824" >> $envirConfig
 fi
 
-if [ -z $(cat $envirConfig | grep RUSTUP_DIST_SERVER)]
+if [ -z $(cat $envirConfig | grep RUSTUP_DIST_SERVER) ]
 then
 	echo "export RUSTUP_DIST_SERVER=https://mirrors.ustc.edu.cn/rust-static" >> $envirConfig
 fi
 
-if [ -z $(cat $envirConfig | grep RUSTUP_UPDATE_ROOT)]
+if [ -z $(cat $envirConfig | grep RUSTUP_UPDATE_ROOT) ]
 then
 	echo "export RUSTUP_UPDATE_ROOT=https://mirrors.ustc.edu.cn/rust-static/rustup" >> $envirConfig
 fi
@@ -107,7 +114,7 @@ apt update
 apt install -y gcc git bzr jq pkg-config mesa-opencl-icd ocl-icd-opencl-dev ubuntu-drivers-common lrzsz
 
 checkgo=$(go version)
-if [ $checkgo != "go version go1.15.6 linux/amd64" ]
+if [ -z $(cat $checkgo | grep go1.15) ]
 then
 	wget https://gomirrors.org/dl/go/go1.15.6.linux-amd64.tar.gz
 	tar -C /usr/local -xzf go1.15.6.linux-amd64.tar.gz
