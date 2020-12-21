@@ -114,10 +114,9 @@ apt update
 apt install -y gcc git bzr jq pkg-config mesa-opencl-icd ocl-icd-opencl-dev ubuntu-drivers-common lrzsz
 
 checkgo=$(go version)
-if [ $checkgo != "go version go1.15.6 linux/amd64" ]
+if [ "$checkgo" != "go version go1.15.6 linux/amd64" ]
 then
 	wget https://gomirrors.org/dl/go/go1.15.6.linux-amd64.tar.gz
-	echo "-----------------now downloading golang-----------------"
 	tar -C /usr/local -xzf go1.15.6.linux-amd64.tar.gz
 	echo "export PATH=$PATH:/usr/local/go/bin" >> $envirConfig
 	source /root/.bashrc
@@ -134,11 +133,26 @@ echo "-----------------All finished!!-----------------"
 
 #4.install fininshed, check installation
 
-nvidiadrivers=$(nvidia-smi)
-echo "$nvidiadrivers"
+nonvidia=$(nvidia-smi | grep "NVIDIA")
+if [ -n "$nonvidia" ]
+then
+	echo "-----------------NVIDIA driver successfully installed-----------------"
+else
+	echo "-----------------NVIDIA driver not installed, please check-----------------"
+fi
 
-goversion=$(go version)
-echo "$goversion"
+nogolang=$(go version | grep "go1.15")
+if [ -n "$nogolang" ]
+then
+	echo "-----------------Golang successfully installed-----------------"
+else
+	echo "-----------------Golang not installed, please check-----------------"
+fi
 
-disk=$(df -h)
-echo "$disk"
+notmounted=$(df -h | grep "/mnt")
+if [ -n "$notmounted" ]
+then
+	echo "-----------------Disks successfully mounted-----------------"
+else
+	echo "-----------------Disks not mounted, please check-----------------"
+fi
